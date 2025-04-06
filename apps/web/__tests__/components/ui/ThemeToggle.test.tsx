@@ -24,6 +24,21 @@ const localStorageMock = (function() {
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
+// Мокаем window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: query === '(prefers-color-scheme: dark)' ? true : false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // устаревший метод, но нужен для совместимости
+    removeListener: jest.fn(), // устаревший метод, но нужен для совместимости
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }))
+});
+
 // Мокаем методы classList
 const mockClassList = {
   add: jest.fn(),

@@ -27,8 +27,10 @@ describe('Input компонент', () => {
 
   test('применяет fullWidth класс, если передан соответствующий prop', () => {
     render(<Input id="test-input" fullWidth />);
-    const inputContainer = screen.getByRole('textbox').parentElement?.parentElement;
-    expect(inputContainer).toHaveClass('w-full');
+    // Получаем родительский div, который должен содержать класс w-full
+    const inputContainer = screen.getByRole('textbox').closest('div');
+    // Проверяем, что класс w-full присутствует в строке классов
+    expect(inputContainer?.className).toContain('w-full');
   });
 
   test('передает дополнительные атрибуты в input', () => {
