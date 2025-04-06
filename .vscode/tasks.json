@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Запустить веб-приложение",
+      "type": "shell",
+      "command": "npm run dev:web",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Запустить тесты",
+      "type": "shell",
+      "command": "npm test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Запустить E2E тесты",
+      "type": "shell",
+      "command": "npm run test:e2e",
+      "problemMatcher": []
+    },
+    {
+      "label": "Линтинг",
+      "type": "shell",
+      "command": "npm run lint",
+      "problemMatcher": []
+    },
+    {
+      "label": "Форматирование кода",
+      "type": "shell",
+      "command": "npm run format",
+      "problemMatcher": []
+    },
+    {
+      "label": "Сборка для продакшн",
+      "type": "shell",
+      "command": "npm run build:web",
+      "problemMatcher": []
+    }
+  ]
+}

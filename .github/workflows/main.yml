@@ -1,0 +1,132 @@
+name: Тестирование и контроль качества
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Тесты и линтинг
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v3
+      
+      - name: Настройка Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Установка зависимостей
+        run: npm ci
+      
+      - name: Проверка линтером
+        run: npm run lint
+      
+      - name: Запуск юнит-тестов
+        run: npm run test:coverage
+      
+      - name: Сохранение отчета о покрытии
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+  
+  e2e:
+    name: E2E тесты
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v3
+      
+      - name: Настройка Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Установка зависимостей
+        run: npm ci
+      
+      - name: Установка Playwright
+        run: npx playwright install --with-deps
+      
+      - name: Запуск E2E тестов
+        run: npm run test:e2e
+      
+      - name: Сохранение скриншотов
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-screenshots
+          path: tests/e2e/screenshots/
+      
+      - name: Сохранение отчета Playwright
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+  
+  visual:
+    name: Визуальное тестирование
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v3
+      
+      - name: Настройка Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Установка зависимостей
+        run: npm ci
+      
+      - name: Сборка Storybook
+        run: npm run build-storybook
+      
+      - name: Сохранение Storybook
+        uses: actions/upload-artifact@v3
+        with:
+          name: storybook-static
+          path: storybook-static/
+  
+  deploy:
+    name: Деплой на Vercel
+    runs-on: ubuntu-latest
+    needs: [test, e2e, visual]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Клонирование репозитория
+        uses: actions/checkout@v3
+      
+      - name: Настройка Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Установка зависимостей
+        run: npm ci
+      
+      - name: Сборка проекта
+        run: npm run build:web
+      
+      - name: Установка Vercel CLI
+        run: npm install --global vercel
+      
+      - name: Деплой на Vercel
+        run: |
+          cd apps/web
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
