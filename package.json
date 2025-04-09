@@ -11,6 +11,10 @@
     "build:web": "cd apps/web && npm run build",
     "start:web": "cd apps/web && npm run start",
     "lint:web": "cd apps/web && npm run lint",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "deploy:auto": "./scripts/deploy.sh",
+    "push": "./scripts/push-to-github.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -21,7 +25,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "if [ -z \"$VERCEL\" ]; then husky; fi"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.1",
