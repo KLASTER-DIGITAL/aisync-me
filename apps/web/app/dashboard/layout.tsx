@@ -4,7 +4,17 @@ import React from 'react';
 import DashboardNav from '../../components/ui/DashboardNav';
 import NotificationsPanel from '../../components/ui/NotificationsPanel';
 import ThemeToggle from '../../components/ui/ThemeToggle';
-import { Notification, User } from '../../../../types';
+
+// Импортируем типы из правильного пути
+import { Notification } from '../../../../types/components.d';
+
+// Временно определяем тип User, пока не будет создан в types
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+}
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
